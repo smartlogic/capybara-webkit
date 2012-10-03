@@ -44,28 +44,28 @@ WebPage *WebPageManager::createPage(QObject *parent) {
 
 void WebPageManager::emitLoadStarted() {
   if (m_started.empty()) {
-    logger() << "Load started";
+    logger() << QTime::currentTime().toString() << ": Load started";
     emit loadStarted();
   }
 }
 
 void WebPageManager::requestCreated(QNetworkReply *reply) {
-  logger() << "Started request to" << reply->url().toString();
+  logger() << QTime::currentTime().toString() << ": Started request to" << reply->url().toString();
   m_started += reply;
 }
 
 void WebPageManager::replyFinished(QNetworkReply *reply) {
   int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-  logger() << "Received" << status << "from" << reply->url().toString();
+  logger() << QTime::currentTime().toString() << ": Received" << status << "from" << reply->url().toString();
   m_started.remove(reply);
-  logger() << m_started.size() << "requests remaining";
+  logger() << QTime::currentTime().toString() << ": " << m_started.size() << "requests remaining";
   if (m_started.empty() && !m_success) {
     emitPageFinished();
   }
 }
 
 void WebPageManager::setPageStatus(bool success) {
-  logger() << "Page finished with" << success;
+  logger() << QTime::currentTime().toString() << ": Page finished with" << success;
   m_success = success && m_success;
   if (m_started.empty()) {
     emitPageFinished();
@@ -73,7 +73,7 @@ void WebPageManager::setPageStatus(bool success) {
 }
 
 void WebPageManager::emitPageFinished() {
-  logger() << "Load finished";
+  logger() << QTime::currentTime().toString() << ": Load finished";
   emit pageFinished(m_success);
   m_success = true;
 }
